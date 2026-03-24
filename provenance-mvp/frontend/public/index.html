@@ -7,430 +7,1659 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Fraunces:ital,wght@0,300;0,600;1,300&display=swap" rel="stylesheet" />
   <style>
-    /* ============================================================
-       AESTHETIC CONTROL PANEL — change everything here
-       ============================================================
-       COLORS:
-       --bg          main page background
-       --surface     card / header background
-       --surface2    slightly lighter surface (sidebar, labels)
-       --border      all borders and dividers
-       --teal        PRIMARY ACCENT: buttons, highlights, logo
-                     try: #c9853a (warm amber), #4a9eff (blue), #9b59b6 (purple)
-       --teal-dim    darker version of accent for hovers
-       --teal-glow   rgba glow version of accent
-       --amber       secondary accent for warnings
-       --text        primary text
-       --text-dim    secondary text (labels, subtitles)
-       --text-muted  tertiary text (placeholders, tiny labels)
-       --green       success states
-       --red         error states
-
-       FONTS:
-       --mono   UI chrome, stats, numbers
-       --serif  titles, document text, logo
-       Change names here AND update the Google Fonts <link> above.
-       Mono alternatives:  'JetBrains Mono', 'Fira Code', 'Space Mono'
-       Serif alternatives: 'Playfair Display', 'Cormorant Garamond', 'Lora'
-
-       QUICK THEME SWAPS (replace the values below):
-       Light mode: --bg #f5f5f0  --text #1a1a2e  --surface #ffffff
-       Warm dark:  --bg #12100e  --surface #1a1714  --teal #c9853a
-       Navy:       --bg #080c14  --surface #0d1420  --teal #4a9eff
-       ============================================================ */
     :root {
-      --bg:        #0d0d14;
-      --surface:   #141420;
-      --surface2:  #1c1c2e;
-      --border:    #2a2a40;
-      --teal:      #0f9b8e;
-      --teal-dim:  #0a6b61;
+      --bg: #0d0d14;
+      --surface: #141420;
+      --surface2: #1c1c2e;
+      --border: #2a2a40;
+      --teal: #0f9b8e;
+      --teal-dim: #0a6b61;
       --teal-glow: rgba(15,155,142,0.15);
-      --amber:     #e8a838;
+      --amber: #e8a838;
       --amber-dim: rgba(232,168,56,0.15);
-      --text:      #e8e8f0;
-      --text-dim:  #7a7a9a;
-      --text-muted:#4a4a6a;
-      --green:     #4caf84;
-      --red:       #e05c5c;
-      --mono:   'IBM Plex Mono', monospace;
-      --serif:  'Fraunces', serif;
+      --text: #e8e8f0;
+      --text-dim: #7a7a9a;
+      --text-muted: #4a4a6a;
+      --green: #4caf84;
+      --red: #e05c5c;
+      --mono: 'IBM Plex Mono', monospace;
+      --serif: 'Fraunces', serif;
     }
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;display:flex;flex-direction:column}
-    header{display:flex;align-items:center;justify-content:space-between;padding:16px 32px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
-    .logo{display:flex;align-items:baseline;gap:10px}
-    .logo-word{font-family:var(--serif);font-size:22px;font-weight:600;color:var(--teal);letter-spacing:-0.5px}
-    .logo-tag{font-size:9px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase}
-    .header-status{display:flex;align-items:center;gap:20px;font-size:11px;color:var(--text-dim)}
-    .status-dot{width:7px;height:7px;border-radius:50%;background:var(--text-muted);display:inline-block;margin-right:6px}
-    .status-dot.live{background:var(--green);box-shadow:0 0 8px var(--green);animation:pulse 2s infinite}
-    .status-dot.pending{background:var(--amber)}
-    @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
-    .hedera-badge{display:flex;align-items:center;gap:6px;font-size:9px;color:var(--text-muted);padding:8px 12px;border:1px solid var(--border);border-radius:2px}
-    .hedera-dot{width:6px;height:6px;border-radius:50%;background:var(--teal)}
-    .screen{display:none;flex:1}
-    .screen.active{display:flex}
-    .centered-screen{align-items:center;justify-content:center;padding:40px}
-    /* SETUP */
-    .setup-card{width:100%;max-width:520px;background:var(--surface);border:1px solid var(--border);border-radius:4px;padding:48px}
-    .setup-eyebrow{font-size:10px;letter-spacing:3px;color:var(--teal);text-transform:uppercase;margin-bottom:16px}
-    .setup-title{font-family:var(--serif);font-size:32px;font-weight:300;color:var(--text);margin-bottom:8px;line-height:1.2}
-    .setup-title em{font-style:italic;color:var(--teal)}
-    .setup-sub{font-size:11px;color:var(--text-dim);margin-bottom:36px;line-height:1.7}
-    .field{margin-bottom:20px}
-    .field label{display:block;font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);margin-bottom:8px}
-    .field input,.field select{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:var(--mono);font-size:13px;padding:12px 14px;outline:none;transition:border-color .2s}
-    .field input:focus,.field select:focus{border-color:var(--teal)}
-    .field-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-    .btn-primary{width:100%;padding:14px;background:var(--teal);color:#fff;border:none;border-radius:2px;font-family:var(--mono);font-size:12px;letter-spacing:1px;cursor:pointer;transition:background .2s,transform .1s;text-transform:uppercase;margin-top:8px}
-    .btn-primary:hover{background:#0d8a7e}
-    .btn-primary:active{transform:scale(0.99)}
-    .btn-primary:disabled{background:var(--text-muted);cursor:not-allowed}
-    .privacy-note{margin-top:20px;padding:12px 14px;background:rgba(15,155,142,0.05);border-left:2px solid var(--teal-dim);font-size:10px;color:var(--text-dim);line-height:1.7}
-    /* CALIBRATION */
-    #calib-screen{flex-direction:column}
-    .calib-wrap{width:100%;max-width:680px;margin:0 auto;padding:48px 40px}
-    .calib-step-indicator{display:flex;align-items:center;gap:8px;margin-bottom:20px}
-    .step-pip{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--text-muted);transition:all .3s}
-    .step-pip.active{border-color:var(--teal);color:var(--teal);box-shadow:0 0 12px var(--teal-glow)}
-    .step-pip.done{background:var(--teal);border-color:var(--teal);color:#fff}
-    .step-line{flex:1;height:1px;background:var(--border)}
-    .calib-title{font-family:var(--serif);font-size:26px;font-weight:300;margin-bottom:8px}
-    .calib-title em{font-style:italic;color:var(--teal)}
-    .calib-desc{font-size:11px;color:var(--text-dim);line-height:1.8;margin-bottom:28px}
-    .passage-box{padding:20px 24px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;font-family:var(--serif);font-size:15px;font-weight:300;line-height:1.8;color:var(--text-dim);margin-bottom:16px;user-select:none}
-    .calib-textarea{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:2px;color:var(--text);font-family:var(--serif);font-size:15px;font-weight:300;line-height:1.8;padding:16px 20px;outline:none;resize:none;height:140px;caret-color:var(--teal);transition:border-color .2s}
-    .calib-textarea:focus{border-color:var(--teal)}
-    .calib-textarea::placeholder{color:var(--text-muted);font-style:italic}
-    .calib-timer-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px}
-    .timer-ring-wrap{display:flex;align-items:center;gap:12px}
-    .timer-ring{width:48px;height:48px;position:relative}
-    .timer-ring svg{transform:rotate(-90deg)}
-    .timer-ring-track{fill:none;stroke:var(--border);stroke-width:3}
-    .timer-ring-fill{fill:none;stroke:var(--teal);stroke-width:3;stroke-linecap:round;stroke-dasharray:126;stroke-dashoffset:0;transition:stroke-dashoffset 1s linear}
-    .timer-ring-text{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--teal)}
-    .calib-live-stats{display:flex;gap:20px}
-    .calib-stat{text-align:center}
-    .calib-stat-val{font-size:20px;font-weight:600;color:var(--teal)}
-    .calib-stat-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted)}
-    .calib-progress{height:2px;background:var(--border);border-radius:1px;overflow:hidden;margin-bottom:24px}
-    .calib-progress-fill{height:100%;background:var(--teal);transition:width 1s linear}
-    .calib-results{display:none;padding:20px 24px;background:rgba(15,155,142,0.05);border:1px solid var(--teal-dim);border-radius:2px;margin-bottom:24px}
-    .calib-results.show{display:block}
-    .calib-results-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--teal);margin-bottom:12px}
-    .calib-results-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-    .calib-result-val{font-size:18px;font-weight:600;color:var(--text)}
-    .calib-result-label{font-size:8px;letter-spacing:1px;text-transform:uppercase;color:var(--text-muted)}
-    /* WRITING */
-    #writing-screen.active{display:grid;grid-template-columns:1fr 320px}
-    .editor-pane{padding:32px 40px;display:flex;flex-direction:column;border-right:1px solid var(--border)}
-    .doc-meta{margin-bottom:20px;display:flex;align-items:center;justify-content:space-between}
-    .doc-title-display{font-family:var(--serif);font-size:20px;font-weight:300;color:var(--text)}
-    .doc-author-display{font-size:10px;color:var(--text-muted);margin-top:3px}
-    .timer-badge{font-size:11px;color:var(--text-dim);background:var(--surface2);padding:5px 10px;border-radius:2px;border:1px solid var(--border)}
-    #editor{flex:1;width:100%;background:transparent;border:none;outline:none;resize:none;font-family:var(--serif);font-size:17px;font-weight:300;line-height:1.85;color:var(--text);caret-color:var(--teal);min-height:400px}
-    #editor::placeholder{color:var(--text-muted);font-style:italic}
-    .editor-footer{margin-top:20px;display:flex;justify-content:space-between;align-items:center;padding-top:16px;border-top:1px solid var(--border)}
-    .word-count{font-size:10px;color:var(--text-muted)}
-    .btn-finalize{padding:10px 24px;background:transparent;border:1px solid var(--teal);color:var(--teal);font-family:var(--mono);font-size:11px;letter-spacing:1px;cursor:pointer;text-transform:uppercase;border-radius:2px;transition:all .2s}
-    .btn-finalize:hover{background:var(--teal);color:#fff}
-    .btn-finalize:disabled{border-color:var(--text-muted);color:var(--text-muted);cursor:not-allowed}
-    .sidebar{padding:24px 20px;display:flex;flex-direction:column;gap:20px;overflow-y:auto;background:var(--surface)}
-    .sidebar-section{border:1px solid var(--border);border-radius:2px;overflow:hidden}
-    .sidebar-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-dim);padding:10px 14px;background:var(--surface2);border-bottom:1px solid var(--border)}
-    .sidebar-content{padding:14px}
-    .stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-    .stat-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:3px}
-    .stat-value{font-size:18px;font-weight:600;color:var(--teal)}
-    .stat-unit{font-size:9px;color:var(--text-muted);margin-left:2px}
-    .baseline-compare{margin-top:12px;padding-top:12px;border-top:1px solid var(--border)}
-    .baseline-label{font-size:8px;letter-spacing:1.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:8px}
-    .baseline-bar-wrap{display:flex;align-items:center;gap:8px;margin-bottom:6px}
-    .baseline-bar-label{font-size:9px;color:var(--text-muted);width:60px;flex-shrink:0}
-    .baseline-bar-track{flex:1;height:4px;background:var(--border);border-radius:2px;overflow:hidden}
-    .baseline-bar-fill{height:100%;border-radius:2px;transition:width .5s ease,background .5s ease}
-    .baseline-bar-val{font-size:9px;color:var(--text-dim);width:36px;text-align:right;flex-shrink:0}
-    .flag-list{display:flex;flex-direction:column;gap:6px}
-    .flag-item{padding:8px 10px;border-radius:2px;font-size:9px;line-height:1.5;animation:slideIn .3s ease}
-    .flag-item.warn{background:var(--amber-dim);border-left:2px solid var(--amber);color:var(--amber)}
-    .flag-item.ok{background:rgba(76,175,132,0.08);border-left:2px solid var(--green);color:var(--green)}
-    .flag-empty{font-size:10px;color:var(--text-muted);padding:4px;text-align:center}
-    #rhythm-canvas{width:100%;height:48px;display:block}
-    .snapshot-feed{display:flex;flex-direction:column;gap:8px;max-height:240px;overflow-y:auto}
-    .snapshot-item{padding:10px 12px;background:var(--bg);border:1px solid var(--border);border-radius:2px;font-size:10px;color:var(--text-dim);animation:slideIn .3s ease}
-    .snapshot-item.flagged{border-left:2px solid var(--amber)}
-    @keyframes slideIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-    .snap-num{color:var(--teal);font-weight:600;margin-right:6px}
-    .snap-tx{font-size:8px;color:var(--text-muted);margin-top:3px;word-break:break-all}
-    .snap-tx a{color:var(--teal-dim);text-decoration:none}
-    .snap-tx a:hover{color:var(--teal)}
-    .snap-time{float:right;color:var(--text-muted)}
-    .next-snap{display:flex;align-items:center;gap:8px;font-size:10px;color:var(--text-dim)}
-    .snap-progress{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
-    .snap-progress-bar{height:100%;background:var(--teal);transition:width 1s linear}
-    /* CERTIFICATE */
-    #cert-screen{flex-direction:column}
-    .cert-card{max-width:700px;width:100%;text-align:center}
-    .cert-seal{width:100px;height:100px;margin:0 auto 28px;background:var(--surface);border:2px solid var(--teal);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:40px;box-shadow:0 0 40px var(--teal-glow);animation:sealIn .6s ease}
-    @keyframes sealIn{from{transform:scale(0.5);opacity:0}to{transform:scale(1);opacity:1}}
-    .cert-headline{font-family:var(--serif);font-size:30px;font-weight:300;color:var(--text);margin-bottom:8px}
-    .cert-sub{font-size:11px;color:var(--text-dim);margin-bottom:24px;line-height:1.7}
-    .cert-flags{margin-bottom:24px;text-align:left;padding:16px 20px;border:1px solid var(--border);border-radius:2px;background:var(--surface)}
-    .cert-flags-title{font-size:9px;letter-spacing:2px;text-transform:uppercase;margin-bottom:10px}
-    .cert-flags-title.clean{color:var(--green)}
-    .cert-flags-title.flagged{color:var(--amber)}
-    .cert-flag-item{font-size:10px;color:var(--text-dim);padding:4px 0;border-bottom:1px solid var(--border)}
-    .cert-flag-item:last-child{border-bottom:none}
-    .cert-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--border);border:1px solid var(--border);border-radius:2px;overflow:hidden;margin-bottom:24px;text-align:left}
-    .cert-detail{padding:16px 20px;background:var(--surface)}
-    .cert-detail-label{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text-muted);margin-bottom:5px}
-    .cert-detail-value{font-size:12px;color:var(--text);word-break:break-all}
-    .cert-detail-value a{color:var(--teal);text-decoration:none}
-    .cert-actions{display:flex;gap:12px;justify-content:center}
-    .btn-cert{padding:12px 28px;font-family:var(--mono);font-size:11px;letter-spacing:1px;text-transform:uppercase;border-radius:2px;cursor:pointer;transition:all .2s}
-    .btn-cert-primary{background:var(--teal);color:#fff;border:1px solid var(--teal)}
-    .btn-cert-primary:hover{background:#0d8a7e}
-    .btn-cert-secondary{background:transparent;color:var(--text-dim);border:1px solid var(--border)}
-    .btn-cert-secondary:hover{border-color:var(--text-dim);color:var(--text)}
-    #toast-container{position:fixed;bottom:24px;right:24px;z-index:999;display:flex;flex-direction:column;gap:8px}
-    .toast{padding:12px 18px;background:var(--surface2);border:1px solid var(--border);border-radius:2px;font-size:11px;color:var(--text);animation:toastIn .3s ease;max-width:320px}
-    .toast.success{border-left:3px solid var(--green)}
-    .toast.error{border-left:3px solid var(--red)}
-    .toast.info{border-left:3px solid var(--teal)}
-    .toast.warn{border-left:3px solid var(--amber)}
-    @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
-    #loading-overlay{display:none;position:fixed;inset:0;background:rgba(13,13,20,0.85);z-index:200;align-items:center;justify-content:center;flex-direction:column;gap:16px}
-    #loading-overlay.active{display:flex}
-    .loading-spinner{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite}
-    @keyframes spin{to{transform:rotate(360deg)}}
-    .loading-text{font-size:11px;color:var(--text-dim);letter-spacing:1px}
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--mono);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER ── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 32px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+
+    .logo-word {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--teal);
+      letter-spacing: -0.5px;
+    }
+
+    .logo-tag {
+      font-size: 9px;
+      color: var(--text-muted);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .header-status {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      font-size: 11px;
+      color: var(--text-dim);
+    }
+
+    .status-dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: var(--text-muted);
+      display: inline-block;
+      margin-right: 6px;
+    }
+    .status-dot.live { background: var(--green); box-shadow: 0 0 8px var(--green); animation: pulse 2s infinite; }
+    .status-dot.pending { background: var(--amber); }
+
+    @keyframes pulse {
+      0%,100% { opacity: 1; } 50% { opacity: 0.4; }
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      flex: 1;
+      gap: 0;
+    }
+
+    /* ── SETUP SCREEN ── */
+    #setup-screen {
+      grid-column: 1 / -1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 57px);
+      padding: 40px;
+    }
+
+    .setup-card {
+      width: 100%;
+      max-width: 520px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 48px;
+    }
+
+    .setup-eyebrow {
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--teal);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .setup-title {
+      font-family: var(--serif);
+      font-size: 32px;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.2;
+    }
+
+    .setup-title em {
+      font-style: italic;
+      color: var(--teal);
+    }
+
+    .setup-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+
+    .field {
+      margin-bottom: 20px;
+    }
+
+    .field label {
+      display: block;
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+
+    .field input {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 13px;
+      padding: 12px 14px;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .field input:focus {
+      border-color: var(--teal);
+    }
+
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field select {
+      width: 100%;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      color: var(--text);
+      font-family: var(--mono);
+      font-size: 12px;
+      padding: 12px 14px;
+      outline: none;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 14px;
+      background: var(--teal);
+      color: #fff;
+      border: none;
+      border-radius: 2px;
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.1s;
+      text-transform: uppercase;
+      margin-top: 8px;
+    }
+
+    .btn-primary:hover { background: #0d8a7e; }
+    .btn-primary:active { transform: scale(0.99); }
+    .btn-primary:disabled { background: var(--text-muted); cursor: not-allowed; }
+
+    .privacy-note {
+      margin-top: 20px;
+      padding: 12px 14px;
+      background: rgba(15,155,142,0.05);
+      border-left: 2px solid var(--teal-dim);
+      font-size: 10px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* ── WRITING AREA ── */
+    #writing-screen { display: none; }
+
+    .editor-pane {
+      padding: 32px 40px;
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border);
+    }
+
+    .doc-meta {
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .doc-title-display {
+      font-family: var(--serif);
+      font-size: 20px;
+      font-weight: 300;
+      color: var(--text);
+    }
+
+    .doc-author-display {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .timer-badge {
+      font-size: 11px;
+      color: var(--text-dim);
+      background: var(--surface2);
+      padding: 5px 10px;
+      border-radius: 2px;
+      border: 1px solid var(--border);
+    }
+
+    #editor {
+      flex: 1;
+      width: 100%;
+      background: transparent;
+      border: none;
+      outline: none;
+      resize: none;
+      font-family: var(--serif);
+      font-size: 17px;
+      font-weight: 300;
+      line-height: 1.85;
+      color: var(--text);
+      caret-color: var(--teal);
+      min-height: 400px;
+    }
+
+    #editor::placeholder {
+      color: var(--text-muted);
+      font-style: italic;
+    }
+
+    .editor-footer {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+    }
+
+    .word-count {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .btn-finalize {
+      padding: 10px 24px;
+      background: transparent;
+      border: 1px solid var(--teal);
+      color: var(--teal);
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      cursor: pointer;
+      text-transform: uppercase;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+
+    .btn-finalize:hover {
+      background: var(--teal);
+      color: #fff;
+    }
+
+    .btn-finalize:disabled {
+      border-color: var(--text-muted);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      overflow-y: auto;
+      background: var(--surface);
+    }
+
+    .sidebar-section {
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .sidebar-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      padding: 10px 14px;
+      background: var(--surface2);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .sidebar-content { padding: 14px; }
+
+    /* Keystroke stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .stat-item { }
+
+    .stat-label {
+      font-size: 8px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 3px;
+    }
+
+    .stat-value {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--teal);
+    }
+
+    .stat-unit {
+      font-size: 9px;
+      color: var(--text-muted);
+      margin-left: 2px;
+    }
+
+    /* Rhythm visualizer */
+    #rhythm-canvas {
+      width: 100%;
+      height: 48px;
+      display: block;
+    }
+
+    /* Snapshot feed */
+    .snapshot-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 280px;
+      overflow-y: auto;
+    }
+
+    .snapshot-item {
+      padding: 10px 12px;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: 10px;
+      color: var(--text-dim);
+      animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .snapshot-item .snap-num {
+      color: var(--teal);
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .snap-tx {
+      font-size: 8px;
+      color: var(--text-muted);
+      margin-top: 3px;
+      word-break: break-all;
+    }
+
+    .snap-tx a {
+      color: var(--teal-dim);
+      text-decoration: none;
+    }
+
+    .snap-tx a:hover { color: var(--teal); }
+
+    .snap-time {
+      float: right;
+      color: var(--text-muted);
+    }
+
+    /* Next snapshot timer */
+    .next-snap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .snap-progress {
+      flex: 1;
+      height: 3px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+
+    .snap-progress-bar {
+      height: 100%;
+      background: var(--teal);
+      transition: width 1s linear;
+    }
+
+    /* ── CERTIFICATE SCREEN ── */
+    #cert-screen {
+      display: none;
+      grid-column: 1 / -1;
+      align-items: center;
+      justify-content: center;
+      padding: 60px 40px;
+    }
+
+    .cert-card {
+      max-width: 680px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .cert-seal {
+      width: 100px;
+      height: 100px;
+      margin: 0 auto 28px;
+      background: var(--surface);
+      border: 2px solid var(--teal);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      box-shadow: 0 0 40px var(--teal-glow);
+      animation: sealIn 0.6s ease;
+    }
+
+    @keyframes sealIn {
+      from { transform: scale(0.5); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .cert-headline {
+      font-family: var(--serif);
+      font-size: 30px;
+      font-weight: 300;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .cert-sub {
+      font-size: 11px;
+      color: var(--text-dim);
+      margin-bottom: 36px;
+      line-height: 1.7;
+    }
+
+    .cert-detail-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+      margin-bottom: 24px;
+      text-align: left;
+    }
+
+    .cert-detail {
+      padding: 16px 20px;
+      background: var(--surface);
+    }
+
+    .cert-detail-label {
+      font-size: 9px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 5px;
+    }
+
+    .cert-detail-value {
+      font-size: 12px;
+      color: var(--text);
+      word-break: break-all;
+    }
+
+    .cert-detail-value a {
+      color: var(--teal);
+      text-decoration: none;
+    }
+
+    .cert-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    .btn-cert {
+      padding: 12px 28px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-cert-primary {
+      background: var(--teal);
+      color: #fff;
+      border: 1px solid var(--teal);
+    }
+
+    .btn-cert-primary:hover { background: #0d8a7e; }
+
+    .btn-cert-secondary {
+      background: transparent;
+      color: var(--text-dim);
+      border: 1px solid var(--border);
+    }
+
+    .btn-cert-secondary:hover { border-color: var(--text-dim); color: var(--text); }
+
+    /* Toasts */
+    #toast-container {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 999;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .toast {
+      padding: 12px 18px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      font-size: 11px;
+      color: var(--text);
+      animation: toastIn 0.3s ease;
+      max-width: 320px;
+    }
+
+    .toast.success { border-left: 3px solid var(--green); }
+    .toast.error { border-left: 3px solid var(--red); }
+    .toast.info { border-left: 3px solid var(--teal); }
+
+    @keyframes toastIn {
+      from { opacity: 0; transform: translateX(20px); }
+      to { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Loading overlay */
+    #loading-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(13,13,20,0.85);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    #loading-overlay.active { display: flex; }
+
+    .loading-spinner {
+      width: 40px; height: 40px;
+      border: 2px solid var(--border);
+      border-top-color: var(--teal);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .loading-text {
+      font-size: 11px;
+      color: var(--text-dim);
+      letter-spacing: 1px;
+    }
+
+    /* Hedera notice */
+    .hedera-badge {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 9px;
+      color: var(--text-muted);
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 2px;
+    }
+
+    .hedera-dot {
+      width: 6px; height: 6px;
+      border-radius: 50%;
+      background: var(--teal);
+    }
+
+    /* ── CALIBRATION SCREEN ── */
+    #calib-screen {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      min-height: calc(100vh - 57px);
+      padding: 40px;
+    }
+    .calib-wrap { width: 100%; max-width: 640px; }
+    .calib-step-indicator { display: flex; align-items: center; gap: 8px; margin-bottom: 28px; }
+    .step-pip { width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--text-muted); transition: all .3s; flex-shrink: 0; }
+    .step-pip.active { border-color: var(--teal); color: var(--teal); box-shadow: 0 0 12px var(--teal-glow); }
+    .step-pip.done { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .step-line { flex: 1; height: 1px; background: var(--border); }
+    .calib-title { font-family: var(--serif); font-size: 26px; font-weight: 300; margin-bottom: 8px; }
+    .calib-title em { font-style: italic; color: var(--teal); }
+    .calib-desc { font-size: 11px; color: var(--text-dim); line-height: 1.8; margin-bottom: 24px; }
+    .passage-box { padding: 18px 22px; background: var(--surface2); border: 1px solid var(--border); border-radius: 2px; font-family: var(--serif); font-size: 14px; font-weight: 300; line-height: 1.8; color: var(--text-dim); margin-bottom: 14px; user-select: none; }
+    .calib-textarea { width: 100%; background: var(--bg); border: 1px solid var(--border); border-radius: 2px; color: var(--text); font-family: var(--serif); font-size: 14px; font-weight: 300; line-height: 1.8; padding: 14px 18px; outline: none; resize: none; height: 130px; caret-color: var(--teal); }
+    .calib-textarea:focus { border-color: var(--teal); }
+    .calib-textarea::placeholder { color: var(--text-muted); font-style: italic; }
+    .calib-row { display: flex; align-items: center; justify-content: space-between; margin: 14px 0; }
+    .calib-stats { display: flex; gap: 24px; }
+    .calib-stat-val { font-size: 22px; font-weight: 600; color: var(--teal); }
+    .calib-stat-label { font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); }
+    .ring-wrap { display: flex; align-items: center; gap: 10px; font-size: 10px; color: var(--text-muted); }
+    .ring { width: 48px; height: 48px; position: relative; flex-shrink: 0; }
+    .ring svg { transform: rotate(-90deg); }
+    .ring-track { fill: none; stroke: var(--border); stroke-width: 3; }
+    .ring-fill { fill: none; stroke: var(--teal); stroke-width: 3; stroke-linecap: round; stroke-dasharray: 126; stroke-dashoffset: 126; }
+    .ring-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 600; color: var(--teal); }
+    .type-progress-wrap { margin-bottom: 16px; }
+    .type-progress-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 6px; }
+    .type-progress-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+    .type-progress-fill { height: 100%; background: var(--teal); width: 0%; transition: width .2s; }
+    .calib-result-box { display: none; padding: 16px 20px; background: rgba(15,155,142,0.06); border: 1px solid var(--teal-dim); border-radius: 2px; margin: 16px 0; }
+    .calib-result-box.show { display: block; }
+    .calib-result-title { font-size: 9px; letter-spacing: 2px; text-transform: uppercase; color: var(--teal); margin-bottom: 10px; }
+    .calib-result-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+    .crv { font-size: 18px; font-weight: 600; color: var(--text); }
+    .crl { font-size: 8px; letter-spacing: 1px; text-transform: uppercase; color: var(--text-muted); }
+    .toast.warn { border-left: 3px solid var(--amber); }
   </style>
 </head>
 <body>
+
 <header>
   <div class="logo">
     <span class="logo-word">Authograph</span>
     <span class="logo-tag">Document Provenance</span>
   </div>
   <div class="header-status">
-    <span><span class="status-dot" id="status-dot"></span><span id="status-text">Ready</span></span>
-    <div class="hedera-badge"><div class="hedera-dot"></div>Hedera Testnet</div>
+    <span id="header-status-indicator">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-text">Ready</span>
+    </span>
+    <div class="hedera-badge">
+      <div class="hedera-dot"></div>
+      Hedera Testnet
+    </div>
   </div>
 </header>
 
-<!-- SCREEN 1: SETUP -->
-<div id="setup-screen" class="screen centered-screen active">
+<!-- SETUP -->
+<div id="setup-screen">
   <div class="setup-card">
     <div class="setup-eyebrow">Provenance Protocol v1.0</div>
     <h1 class="setup-title">Prove your work is <em>yours</em>.</h1>
-    <p class="setup-sub">Authograph records your behavioral writing fingerprint — not your content — on the Hedera public ledger. A two-minute calibration learns your personal typing style. Deviations get flagged. When done, get a certificate anyone can verify.</p>
-    <div class="field"><label>Document Title</label><input type="text" id="doc-title" placeholder="e.g. Research Paper on Neural Scaling Laws" /></div>
-    <div class="field"><label>Your Name / Pseudonym</label><input type="text" id="author-name" placeholder="e.g. A. Smith or anonymous@research.org" /></div>
-    <div class="field-row">
-      <div class="field"><label>Snapshot Interval</label><select id="snapshot-interval"><option value="60">Every 1 min (demo)</option><option value="300" selected>Every 5 min</option><option value="600">Every 10 min</option></select></div>
-      <div class="field"><label>Backend URL</label><input type="text" id="backend-url" value="http://localhost:3001" /></div>
+    <p class="setup-sub">
+      Authograph records your behavioral writing fingerprint, not your content, on the Hedera public ledger. A short calibration learns your personal typing style. When done, get a certificate anyone can verify.
+    </p>
+
+    <div class="field">
+      <label>Document Title</label>
+      <input type="text" id="doc-title" placeholder="e.g. Research Paper on Neural Scaling Laws" />
     </div>
-    <button class="btn-primary" id="start-btn" onclick="goToCalibration()">Begin Calibration →</button>
-    <div class="privacy-note">🔒 Your document content is never transmitted or stored. Only SHA-256 hashes and aggregate typing statistics are sent to the backend. Calibration data stays on your device only.</div>
+
+    <div class="field">
+      <label>Your Name / Pseudonym</label>
+      <input type="text" id="author-name" placeholder="e.g. A. Smith or anonymous@research.org" />
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label>Snapshot Interval</label>
+        <select id="snapshot-interval">
+          <option value="60">Every 1 min (demo)</option>
+          <option value="300" selected>Every 5 min</option>
+          <option value="600">Every 10 min</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Backend URL</label>
+        <input type="text" id="backend-url" value="http://localhost:3001" />
+      </div>
+    </div>
+
+    <button class="btn-primary" id="start-btn" onclick="goCalib()">
+      Begin Calibration →
+    </button>
+
+    <div class="privacy-note">
+      🔒 Your document content is never transmitted or stored. Only SHA-256 hashes
+      and aggregate typing statistics (averages, ratios) are sent to the backend and
+      recorded on the ledger.
+    </div>
   </div>
 </div>
 
-<!-- SCREEN 2: CALIBRATION -->
-<div id="calib-screen" class="screen centered-screen">
+
+<!-- CALIBRATION -->
+<div id="calib-screen">
   <div class="calib-wrap">
+
     <div class="calib-step-indicator">
       <div class="step-pip active" id="pip-1">1</div>
       <div class="step-line"></div>
       <div class="step-pip" id="pip-2">2</div>
       <div class="step-line"></div>
-      <div class="step-pip" id="pip-3">✓</div>
+      <div class="step-pip" id="pip-3">3</div>
     </div>
 
-    <!-- Task 1 -->
+    <!-- TASK 1 -->
     <div id="calib-task-1">
       <h2 class="calib-title">Type this passage <em>at your normal pace</em>.</h2>
-      <p class="calib-desc">This measures your physical typing ceiling — how fast your fingers move when the thinking is already done. Don't rush or slow down. Just type naturally. This data stays on your device only.</p>
-      <div class="passage-box" id="passage-text">The practice of writing has always been tied to the question of authorship. From the earliest manuscripts to modern documents, the origin of a text carries weight in courts, in classrooms, in the pages of journals. What matters is not merely what was written, but who wrote it, and when.</div>
-      <div class="calib-timer-row">
-        <div class="timer-ring-wrap">
-          <div class="timer-ring">
-            <svg viewBox="0 0 48 48" width="48" height="48"><circle class="timer-ring-track" cx="24" cy="24" r="20"/><circle class="timer-ring-fill" id="ring-fill-1" cx="24" cy="24" r="20"/></svg>
-            <div class="timer-ring-text" id="ring-text-1">—</div>
+      <p class="calib-desc">This measures your physical typing ceiling. Do not rush or slow down. Just type naturally. Your content stays on your device only.</p>
+      <div class="passage-box" id="passage-box">The practice of writing has always been tied to the question of authorship. From the earliest manuscripts to modern documents, the origin of a text carries weight in courts, in classrooms, in the pages of journals. What matters is not merely what was written, but who wrote it, and when.</div>
+      <div class="calib-row">
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg viewBox="0 0 48 48" width="48" height="48"><circle class="ring-track" cx="24" cy="24" r="20"/><circle class="ring-fill" id="ring1" cx="24" cy="24" r="20"/></svg>
+            <div class="ring-text" id="ring1-text">60</div>
           </div>
-          <span style="font-size:10px;color:var(--text-muted)">seconds remaining</span>
+          sec remaining
         </div>
-        <div class="calib-live-stats">
-          <div class="calib-stat"><div class="calib-stat-val" id="c1-wpm">—</div><div class="calib-stat-label">WPM</div></div>
-          <div class="calib-stat"><div class="calib-stat-val" id="c1-rhythm">—</div><div class="calib-stat-label">Rhythm</div></div>
-        </div>
-      </div>
-      <div class="calib-progress"><div class="calib-progress-fill" id="calib-prog-1" style="width:0%"></div></div>
-      <textarea class="calib-textarea" id="calib-input-1" placeholder="Start typing the passage above to begin the timer..." spellcheck="false"></textarea>
-      <div class="calib-results" id="calib-result-1">
-        <div class="calib-results-title">✓ Transcription baseline captured</div>
-        <div class="calib-results-grid">
-          <div><div class="calib-result-val" id="r1-wpm">—</div><div class="calib-result-label">Ceiling WPM</div></div>
-          <div><div class="calib-result-val" id="r1-dwell">—</div><div class="calib-result-label">Avg Dwell ms</div></div>
-          <div><div class="calib-result-val" id="r1-flight">—</div><div class="calib-result-label">Avg Flight ms</div></div>
-          <div><div class="calib-result-val" id="r1-rhythm">—</div><div class="calib-result-label">Rhythm Score</div></div>
+        <div class="calib-stats">
+          <div><div class="calib-stat-val" id="t1-wpm">0</div><div class="calib-stat-label">WPM</div></div>
+          <div><div class="calib-stat-val" id="t1-rhythm">0</div><div class="calib-stat-label">Rhythm</div></div>
         </div>
       </div>
-      <button class="btn-primary" id="calib-next-1" onclick="startCalibTask2()" disabled style="margin-top:16px">Continue to Task 2 →</button>
+      <div class="type-progress-wrap">
+        <div class="type-progress-label">Typing progress</div>
+        <div class="type-progress-track"><div class="type-progress-fill" id="type-prog"></div></div>
+      </div>
+      <textarea id="t1-input" class="calib-textarea" placeholder="Start typing the passage above..." spellcheck="false"></textarea>
+      <div class="calib-result-box" id="t1-results">
+        <div class="calib-result-title">Transcription baseline captured</div>
+        <div class="calib-result-grid">
+          <div><div class="crv" id="t1-r-wpm">0</div><div class="crl">Ceiling WPM</div></div>
+          <div><div class="crv" id="t1-r-dwell">0</div><div class="crl">Avg Dwell ms</div></div>
+          <div><div class="crv" id="t1-r-flight">0</div><div class="crl">Avg Flight ms</div></div>
+          <div><div class="crv" id="t1-r-rhythm">0</div><div class="crl">Rhythm Score</div></div>
+        </div>
+      </div>
+      <button class="btn-primary" id="t1-next" onclick="goTask2()" disabled style="margin-top:4px">Continue to Task 2 →</button>
     </div>
 
-    <!-- Task 2 -->
+    <!-- TASK 2 -->
     <div id="calib-task-2" style="display:none">
       <h2 class="calib-title">Now write <em>freely</em> for 90 seconds.</h2>
-      <p class="calib-desc">Describe your favourite place you've ever visited. Don't worry about quality or length — just write whatever comes to mind, as naturally as you can. This captures your cognitive writing rhythm: how fast you think and write simultaneously.</p>
-      <div class="calib-timer-row">
-        <div class="timer-ring-wrap">
-          <div class="timer-ring">
-            <svg viewBox="0 0 48 48" width="48" height="48"><circle class="timer-ring-track" cx="24" cy="24" r="20"/><circle class="timer-ring-fill" id="ring-fill-2" cx="24" cy="24" r="20"/></svg>
-            <div class="timer-ring-text" id="ring-text-2">90</div>
+      <p class="calib-desc">Describe your favourite place you have ever visited. Do not worry about quality. Just write naturally. This captures your cognitive writing rhythm.</p>
+      <div class="calib-row">
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg viewBox="0 0 48 48" width="48" height="48"><circle class="ring-track" cx="24" cy="24" r="20"/><circle class="ring-fill" id="ring2" cx="24" cy="24" r="20"/></svg>
+            <div class="ring-text" id="ring2-text">90</div>
           </div>
-          <span style="font-size:10px;color:var(--text-muted)">seconds remaining</span>
+          sec remaining
         </div>
-        <div class="calib-live-stats">
-          <div class="calib-stat"><div class="calib-stat-val" id="c2-wpm">—</div><div class="calib-stat-label">WPM</div></div>
-          <div class="calib-stat"><div class="calib-stat-val" id="c2-rhythm">—</div><div class="calib-stat-label">Rhythm</div></div>
-        </div>
-      </div>
-      <textarea class="calib-textarea" id="calib-input-2" placeholder="Start typing to begin the timer..." spellcheck="true" style="height:180px"></textarea>
-      <div class="calib-results" id="calib-result-2">
-        <div class="calib-results-title">✓ Freeflow baseline captured</div>
-        <div class="calib-results-grid">
-          <div><div class="calib-result-val" id="r2-wpm">—</div><div class="calib-result-label">Freeflow WPM</div></div>
-          <div><div class="calib-result-val" id="r2-dwell">—</div><div class="calib-result-label">Avg Dwell ms</div></div>
-          <div><div class="calib-result-val" id="r2-flight">—</div><div class="calib-result-label">Avg Flight ms</div></div>
-          <div><div class="calib-result-val" id="r2-rhythm">—</div><div class="calib-result-label">Rhythm Score</div></div>
+        <div class="calib-stats">
+          <div><div class="calib-stat-val" id="t2-wpm">0</div><div class="calib-stat-label">WPM</div></div>
+          <div><div class="calib-stat-val" id="t2-rhythm">0</div><div class="calib-stat-label">Rhythm</div></div>
         </div>
       </div>
-      <button class="btn-primary" id="calib-next-2" onclick="finishCalibration()" disabled style="margin-top:16px">Start Writing Session →</button>
+      <textarea id="t2-input" class="calib-textarea" placeholder="Start typing to begin the timer..." spellcheck="true" style="height:170px"></textarea>
+      <div class="calib-result-box" id="t2-results">
+        <div class="calib-result-title">Freeflow baseline captured</div>
+        <div class="calib-result-grid">
+          <div><div class="crv" id="t2-r-wpm">0</div><div class="crl">Freeflow WPM</div></div>
+          <div><div class="crv" id="t2-r-dwell">0</div><div class="crl">Avg Dwell ms</div></div>
+          <div><div class="crv" id="t2-r-flight">0</div><div class="crl">Avg Flight ms</div></div>
+          <div><div class="crv" id="t2-r-rhythm">0</div><div class="crl">Rhythm Score</div></div>
+        </div>
+      </div>
+      <button class="btn-primary" id="t2-next" onclick="goWriting()" disabled style="margin-top:4px">Start Writing Session →</button>
     </div>
+
   </div>
 </div>
 
-<!-- SCREEN 3: WRITING -->
-<div id="writing-screen" class="screen">
+<!-- WRITING + SIDEBAR -->
+<div id="writing-screen" style="display:contents;">
   <div class="editor-pane">
     <div class="doc-meta">
-      <div><div class="doc-title-display" id="display-title">Untitled</div><div class="doc-author-display" id="display-author">—</div></div>
+      <div>
+        <div class="doc-title-display" id="display-title">Untitled</div>
+        <div class="doc-author-display" id="display-author">—</div>
+      </div>
       <div class="timer-badge" id="session-timer">00:00</div>
     </div>
-    <textarea id="editor" placeholder="Begin writing here. Your keystrokes are analyzed locally — nothing is sent to any server." spellcheck="true"></textarea>
+
+    <textarea
+      id="editor"
+      placeholder="Begin writing here. Your keystrokes are being analyzed locally — nothing is sent to any server. Type naturally."
+      spellcheck="true"
+    ></textarea>
+
     <div class="editor-footer">
       <span class="word-count"><span id="word-count">0</span> words · <span id="char-count">0</span> chars</span>
-      <button class="btn-finalize" id="finalize-btn" onclick="finalizeSession()" disabled>Finalize & Issue Certificate →</button>
+      <button class="btn-finalize" id="finalize-btn" onclick="finalizeSession()" disabled>
+        Finalize & Issue Certificate →
+      </button>
     </div>
   </div>
+
   <div class="sidebar">
     <div class="sidebar-section">
-      <div class="sidebar-label">Live vs. Your Baseline</div>
+      <div class="sidebar-label">Live Keystroke Profile</div>
       <div class="sidebar-content">
         <div class="stats-grid">
-          <div><div class="stat-label">Current WPM</div><div class="stat-value" id="stat-wpm">—</div></div>
-          <div><div class="stat-label">Rhythm Score</div><div class="stat-value" id="stat-rhythm">—</div></div>
-          <div><div class="stat-label">Key Dwell</div><div class="stat-value" id="stat-dwell">—<span class="stat-unit">ms</span></div></div>
-          <div><div class="stat-label">Inter-key</div><div class="stat-value" id="stat-flight">—<span class="stat-unit">ms</span></div></div>
-        </div>
-        <div class="baseline-compare">
-          <div class="baseline-label">vs. your calibration</div>
-          <div class="baseline-bar-wrap"><div class="baseline-bar-label">WPM</div><div class="baseline-bar-track"><div class="baseline-bar-fill" id="bar-wpm" style="width:0%;background:var(--teal)"></div></div><div class="baseline-bar-val" id="bar-wpm-val">—</div></div>
-          <div class="baseline-bar-wrap"><div class="baseline-bar-label">Ceiling</div><div class="baseline-bar-track"><div class="baseline-bar-fill" style="width:100%;background:var(--border)"></div></div><div class="baseline-bar-val" id="bar-ceiling-val">—</div></div>
-          <div class="baseline-bar-wrap"><div class="baseline-bar-label">Dwell</div><div class="baseline-bar-track"><div class="baseline-bar-fill" id="bar-dwell" style="width:0%;background:var(--teal)"></div></div><div class="baseline-bar-val" id="bar-dwell-val">—</div></div>
+          <div class="stat-item">
+            <div class="stat-label">Typing Speed</div>
+            <div class="stat-value" id="stat-wpm">—<span class="stat-unit">wpm</span></div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Rhythm Score</div>
+            <div class="stat-value" id="stat-rhythm">—</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Key Dwell</div>
+            <div class="stat-value" id="stat-dwell">—<span class="stat-unit">ms</span></div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-label">Inter-key</div>
+            <div class="stat-value" id="stat-flight">—<span class="stat-unit">ms</span></div>
+          </div>
         </div>
       </div>
     </div>
+
     <div class="sidebar-section">
       <div class="sidebar-label">Typing Rhythm Waveform</div>
-      <div class="sidebar-content" style="padding:10px"><canvas id="rhythm-canvas" width="280" height="48"></canvas></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Anomaly Flags</div>
-      <div class="sidebar-content" style="padding:10px">
-        <div class="flag-list" id="flag-list"><div class="flag-empty" id="flag-empty">No flags — session looks clean ✓</div></div>
+      <div class="sidebar-content" style="padding:10px 10px 8px;">
+        <canvas id="rhythm-canvas" width="280" height="48"></canvas>
       </div>
     </div>
+
     <div class="sidebar-section">
       <div class="sidebar-label">Next Snapshot</div>
-      <div class="sidebar-content"><div class="next-snap"><span id="next-snap-time">—</span><div class="snap-progress"><div class="snap-progress-bar" id="snap-progress-bar" style="width:0%"></div></div></div></div>
-    </div>
-    <div class="sidebar-section">
-      <div class="sidebar-label">Ledger Snapshots (<span id="snap-count">0</span>)</div>
-      <div class="sidebar-content" style="padding:10px">
-        <div class="snapshot-feed" id="snapshot-feed"><div style="font-size:10px;color:var(--text-muted);padding:4px">Awaiting first snapshot...</div></div>
+      <div class="sidebar-content">
+        <div class="next-snap">
+          <span id="next-snap-time">—</span>
+          <div class="snap-progress">
+            <div class="snap-progress-bar" id="snap-progress-bar" style="width:0%"></div>
+          </div>
+        </div>
       </div>
     </div>
-    <button class="btn-primary" onclick="manualSnapshot()" style="font-size:10px">⊕ Manual Snapshot Now</button>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Ledger Snapshots (<span id="snap-count">0</span>)</div>
+      <div class="sidebar-content" style="padding:10px;">
+        <div class="snapshot-feed" id="snapshot-feed">
+          <div style="font-size:10px;color:var(--text-muted);padding:4px;">
+            Snapshots will appear here as they are anchored to the Hedera ledger...
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="manualSnapshot()" id="manual-snap-btn" style="width:100%;font-size:10px;">
+      ⊕ Manual Snapshot Now
+    </button>
   </div>
 </div>
 
-<!-- SCREEN 4: CERTIFICATE -->
-<div id="cert-screen" class="screen centered-screen">
+<!-- CERTIFICATE -->
+<div id="cert-screen">
   <div class="cert-card">
-    <div class="cert-seal" id="cert-seal">🔐</div>
+    <div class="cert-seal">🔐</div>
     <h2 class="cert-headline">Certificate of Human Origin</h2>
-    <p class="cert-sub">This writing session has been finalized and anchored on the Hedera Consensus Service.<br/>The following record is immutable and independently verifiable at hashscan.io.</p>
-    <div class="cert-flags" id="cert-flags-section">
-      <div class="cert-flags-title clean" id="cert-flags-title">✓ NO ANOMALY FLAGS</div>
-      <div id="cert-flags-list"></div>
+    <p class="cert-sub">
+      This writing session has been finalized and anchored on the Hedera Consensus Service.<br />
+      The following record is immutable and independently verifiable.
+    </p>
+
+    <div class="cert-detail-grid" id="cert-details">
+      <!-- populated by JS -->
     </div>
-    <div class="cert-detail-grid" id="cert-details"></div>
+
     <div class="cert-actions">
-      <button class="btn-cert btn-cert-primary" id="download-cert-btn">↓ Download PDF Certificate</button>
-      <button class="btn-cert btn-cert-secondary" onclick="location.reload()">Start New Session</button>
+      <button class="btn-cert btn-cert-primary" id="download-cert-btn">
+        ↓ Download PDF Certificate
+      </button>
+      <button class="btn-cert btn-cert-secondary" onclick="location.reload()">
+        Start New Session
+      </button>
     </div>
   </div>
 </div>
 
+<!-- Toast container -->
 <div id="toast-container"></div>
-<div id="loading-overlay"><div class="loading-spinner"></div><div class="loading-text" id="loading-text">Anchoring to Hedera...</div></div>
+
+<!-- Loading overlay -->
+<div id="loading-overlay">
+  <div class="loading-spinner"></div>
+  <div class="loading-text" id="loading-text">Anchoring to Hedera...</div>
+</div>
 
 <script>
-let BACKEND_URL="http://localhost:3001",SNAPSHOT_INTERVAL=300;
-const CALIB_DURATION_1=60,CALIB_DURATION_2=90;
-let calibProfile=null;
-const cks={keyDownTimes:{},dwellTimes:[],flightTimes:[],lastKeyUp:null,startTime:null,active:false,timerInterval:null,duration:60,elapsed:0,onComplete:null,taskNum:1};
-function calibOnKeyDown(e){if(!cks.active)return;if(!cks.startTime){cks.startTime=performance.now();startCalibTimer();}cks.keyDownTimes[e.code]=performance.now();}
-function calibOnKeyUp(e){if(!cks.active)return;const t=performance.now();const down=cks.keyDownTimes[e.code];if(down){const d=t-down;if(d>10&&d<800)cks.dwellTimes.push(d);delete cks.keyDownTimes[e.code];}if(cks.lastKeyUp){const f=t-cks.lastKeyUp;if(f>10&&f<3000)cks.flightTimes.push(f);}cks.lastKeyUp=t;updateCalibLive();}
-function startCalibTimer(){const total=cks.duration,circ=126;cks.timerInterval=setInterval(()=>{cks.elapsed++;const rem=Math.max(0,total-cks.elapsed),timeProg=cks.elapsed/total;const rId=cks.taskNum===1?'ring-fill-1':'ring-fill-2',tId=cks.taskNum===1?'ring-text-1':'ring-text-2';document.getElementById(rId).style.strokeDashoffset=circ*(1-timeProg);document.getElementById(tId).textContent=rem;if(cks.taskNum===1){const passage=document.getElementById('passage-text').textContent.trim();const typed=(document.getElementById('calib-input-1').value||'').trim();const typeProg=Math.min(1,typed.length/passage.length);document.getElementById('calib-prog-1').style.width=typeProg*100+'%';if(typeProg>=0.8)document.getElementById('calib-next-1').disabled=false;}if(cks.elapsed>=total){clearInterval(cks.timerInterval);cks.active=false;if(!cks.completed){cks.completed=true;cks.onComplete();}}},1000);}
-function updateCalibLive(){const wId=cks.taskNum===1?'c1-wpm':'c2-wpm',rId=cks.taskNum===1?'c1-rhythm':'c2-rhythm',iId=cks.taskNum===1?'calib-input-1':'calib-input-2';const text=document.getElementById(iId).value;const wc=text.trim()===''?0:text.trim().split(/\s+/).length;const em=(cks.elapsed||1)/60;document.getElementById(wId).textContent=Math.round(wc/em)||'—';document.getElementById(rId).textContent=rhythmScore(cks.flightTimes.slice(-50))||'—';}
-function getCalibStats(inputId){const text=document.getElementById(inputId).value;const wc=text.trim()===''?0:text.trim().split(/\s+/).length;return{wpm:Math.round(wc/(cks.duration/60)),dwell:avg(cks.dwellTimes),flight:avg(cks.flightTimes),rhythm:parseFloat(rhythmScore(cks.flightTimes))};}
-function goToCalibration(){const title=document.getElementById('doc-title').value.trim(),author=document.getElementById('author-name').value.trim();BACKEND_URL=document.getElementById('backend-url').value.trim();SNAPSHOT_INTERVAL=parseInt(document.getElementById('snapshot-interval').value);if(!title||!author){toast('Please enter a document title and your name.','error');return;}showScreen('calib-screen');const i1=document.getElementById('calib-input-1');i1.addEventListener('keydown',calibOnKeyDown);i1.addEventListener('keyup',calibOnKeyUp);cks.active=true;cks.completed=false;cks.taskNum=1;cks.duration=CALIB_DURATION_1;cks.startTime=null;cks.elapsed=0;cks.dwellTimes=[];cks.flightTimes=[];cks.lastKeyUp=null;cks.onComplete=completeTask1;i1.focus();}
-function completeTask1(){const s=getCalibStats('calib-input-1');window._calib1=s;document.getElementById('r1-wpm').textContent=s.wpm;document.getElementById('r1-dwell').textContent=s.dwell;document.getElementById('r1-flight').textContent=s.flight;document.getElementById('r1-rhythm').textContent=s.rhythm;document.getElementById('calib-result-1').classList.add('show');document.getElementById('calib-next-1').disabled=false;document.getElementById('calib-input-1').disabled=true;document.getElementById('pip-1').classList.replace('active','done');document.getElementById('pip-2').classList.add('active');toast('Transcription baseline captured!','success');}
-function startCalibTask2(){document.getElementById('calib-task-1').style.display='none';document.getElementById('calib-task-2').style.display='block';const i1=document.getElementById('calib-input-1');i1.removeEventListener('keydown',calibOnKeyDown);i1.removeEventListener('keyup',calibOnKeyUp);const i2=document.getElementById('calib-input-2');i2.addEventListener('keydown',calibOnKeyDown);i2.addEventListener('keyup',calibOnKeyUp);clearInterval(cks.timerInterval);cks.active=true;cks.completed=false;cks.taskNum=2;cks.duration=CALIB_DURATION_2;cks.startTime=null;cks.elapsed=0;cks.dwellTimes=[];cks.flightTimes=[];cks.lastKeyUp=null;cks.onComplete=completeTask2;i2.focus();}
-function completeTask2(){const s=getCalibStats('calib-input-2');window._calib2=s;document.getElementById('r2-wpm').textContent=s.wpm;document.getElementById('r2-dwell').textContent=s.dwell;document.getElementById('r2-flight').textContent=s.flight;document.getElementById('r2-rhythm').textContent=s.rhythm;document.getElementById('calib-result-2').classList.add('show');document.getElementById('calib-next-2').disabled=false;document.getElementById('calib-input-2').disabled=true;document.getElementById('pip-2').classList.replace('active','done');document.getElementById('pip-3').classList.add('active');toast('Freeflow baseline captured!','success');}
-function finishCalibration(){const c1=window._calib1,c2=window._calib2;calibProfile={transcriptionWPM:c1.wpm,transcriptionDwell:c1.dwell,transcriptionFlight:c1.flight,transcriptionRhythm:c1.rhythm,freeflowWPM:c2.wpm,freeflowDwell:c2.dwell,freeflowFlight:c2.flight,freeflowRhythm:c2.rhythm,ceilingWPM:c1.wpm};document.getElementById('bar-ceiling-val').textContent=`${c1.wpm} max`;startSession();}
-const ks={keyDownTimes:{},dwellTimes:[],flightTimes:[],lastKeyUp:null,totalKeys:0,backspaces:0,pauseCount:0,burstCount:0,inBurst:false,lastActivity:null,rhythmBuffer:[],lastContentLength:0,_lastKeysAtCheck:0};
-const anomalies=[];let lastSnapshotWordCount=0,lastSnapshotKeyCount=0;
-function onKeyDown(e){const t=performance.now();ks.keyDownTimes[e.code]=t;if(ks.lastActivity&&(t-ks.lastActivity)>2000){ks.pauseCount++;ks.inBurst=false;}if(!ks.inBurst){ks.burstCount++;ks.inBurst=true;}ks.lastActivity=t;}
-function onKeyUp(e){const t=performance.now();const down=ks.keyDownTimes[e.code];if(down){const d=t-down;if(d>10&&d<800)ks.dwellTimes.push(d);delete ks.keyDownTimes[e.code];}if(ks.lastKeyUp){const f=t-ks.lastKeyUp;if(f>10&&f<3000){ks.flightTimes.push(f);ks.rhythmBuffer.push(f);if(ks.rhythmBuffer.length>60)ks.rhythmBuffer.shift();}}ks.lastKeyUp=t;ks.totalKeys++;if(e.key==='Backspace')ks.backspaces++;checkAnomalies();updateLiveStats();drawRhythm();}
-function onEditorInput(){const cur=document.getElementById('editor').value.length;const delta=cur-ks.lastContentLength;if(delta>80&&ks.totalKeys-ks._lastKeysAtCheck<5)addFlag('warn',`Paste event detected: +${delta} chars with minimal keystrokes`);ks.lastContentLength=cur;ks._lastKeysAtCheck=ks.totalKeys;}
-function checkAnomalies(){if(!calibProfile)return;const s=getCurrentStats();if(s.avgWPM>calibProfile.ceilingWPM*1.25&&s.avgWPM>20)addFlag('warn',`WPM ${s.avgWPM} exceeds your calibrated ceiling of ${calibProfile.ceilingWPM}`);if(parseFloat(s.rhythmScore)>0.97&&ks.totalKeys>100)addFlag('warn',`Unusually consistent rhythm (${s.rhythmScore}) — may indicate macro use`);}
-function addFlag(type,message){if(anomalies.find(a=>a.message===message))return;anomalies.push({type,message,time:new Date().toLocaleTimeString()});const list=document.getElementById('flag-list');document.getElementById('flag-empty').style.display='none';const item=document.createElement('div');item.className=`flag-item ${type}`;item.innerHTML=`<strong>${new Date().toLocaleTimeString()}</strong> — ${message}`;list.appendChild(item);toast(message,type==='warn'?'warn':'info');}
-function checkIdleAnomaly(idx){if(!ks.lastActivity)return null;const idle=Math.round((performance.now()-ks.lastActivity)/1000);return idle>300?`Idle gap before snapshot #${idx}: ${Math.round(idle/60)} min inactive`:null;}
-function checkWordCountJump(idx){const wc=wordCount(),kc=ks.totalKeys;const wd=wc-lastSnapshotWordCount,kd=kc-lastSnapshotKeyCount;lastSnapshotWordCount=wc;lastSnapshotKeyCount=kc;return(wd>40&&kd<20)?`Content jump at snapshot #${idx}: +${wd} words, only ${kd} keystrokes`:null;}
-function getCurrentStats(){const recent=ks.flightTimes.slice(-100),rDwell=ks.dwellTimes.slice(-100),wc=wordCount(),el=sessionStartTime?(Date.now()-sessionStartTime)/60000:1;return{avgWPM:Math.round(wc/Math.max(el,0.1)),avgDwell:avg(rDwell),avgFlight:avg(recent),pauseCount:ks.pauseCount,burstCount:ks.burstCount,rhythmScore:parseFloat(rhythmScore(recent)),backspaceRatio:ks.totalKeys>0?parseFloat((ks.backspaces/ks.totalKeys).toFixed(4)):0,contentHash:hashString(document.getElementById('editor').value),metadataHash:hashString(JSON.stringify({wc,chars:document.getElementById('editor').value.length,ts:Date.now()})),wordCount:wc,anomalyFlags:anomalies.map(a=>a.message)};}
-function updateLiveStats(){const s=getCurrentStats();document.getElementById('stat-wpm').textContent=s.avgWPM;document.getElementById('stat-rhythm').textContent=s.rhythmScore;document.getElementById('stat-dwell').innerHTML=`${s.avgDwell||'—'}<span class="stat-unit">ms</span>`;document.getElementById('stat-flight').innerHTML=`${s.avgFlight||'—'}<span class="stat-unit">ms</span>`;document.getElementById('word-count').textContent=wordCount();document.getElementById('char-count').textContent=document.getElementById('editor').value.length;if(calibProfile){const ceil=calibProfile.ceilingWPM||1,ff=calibProfile.freeflowWPM||1,bd=calibProfile.freeflowDwell||1;const wp=Math.min(100,(s.avgWPM/ceil)*100);const col=s.avgWPM>ceil*1.1?'var(--red)':s.avgWPM>ff*1.2?'var(--amber)':'var(--teal)';document.getElementById('bar-wpm').style.cssText=`width:${wp}%;background:${col}`;document.getElementById('bar-wpm-val').textContent=s.avgWPM;const dp=Math.min(100,(s.avgDwell/(bd*1.5))*100);document.getElementById('bar-dwell').style.width=`${dp}%`;document.getElementById('bar-dwell-val').textContent=s.avgDwell?`${s.avgDwell}ms`:'—';}}
-function drawRhythm(){const canvas=document.getElementById('rhythm-canvas');const ctx=canvas.getContext('2d');const W=canvas.width,H=canvas.height;ctx.clearRect(0,0,W,H);const data=ks.rhythmBuffer;if(data.length<2)return;const maxV=Math.max(...data,300),minV=Math.min(...data,50);ctx.strokeStyle='#0f9b8e';ctx.lineWidth=1.5;ctx.shadowBlur=6;ctx.shadowColor='#0f9b8e';ctx.beginPath();data.forEach((v,i)=>{const x=(i/(data.length-1))*W,y=H-((v-minV)/(maxV-minV+1))*(H-8)-4;i===0?ctx.moveTo(x,y):ctx.lineTo(x,y);});ctx.stroke();}
-let sessionId=null,topicId=null,sessionStartTime=null,snapshotCount=0,snapshotTimer=null,sessionTimerInterval=null,nextSnapAt=null,progressInterval=null;
-async function startSession(){const title=document.getElementById('doc-title').value.trim(),author=document.getElementById('author-name').value.trim();setLoading(true,'Creating Hedera HCS topic...');try{const res=await fetch(`${BACKEND_URL}/api/session/start`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({documentTitle:title,authorName:author})});const data=await res.json();if(!data.success)throw new Error(data.error);sessionId=data.sessionId;topicId=data.topicId;sessionStartTime=Date.now();document.getElementById('display-title').textContent=title;document.getElementById('display-author').textContent=author;showScreen('writing-screen');const ed=document.getElementById('editor');ed.addEventListener('keydown',onKeyDown);ed.addEventListener('keyup',onKeyUp);ed.addEventListener('input',onEditorInput);ed.focus();sessionTimerInterval=setInterval(updateSessionTimer,1000);scheduleNextSnapshot();document.getElementById('status-dot').classList.add('live');document.getElementById('status-text').textContent=`Session active · Topic ${topicId}`;setLoading(false);toast(`Session started! Ceiling: ${calibProfile.ceilingWPM} WPM · Freeflow: ${calibProfile.freeflowWPM} WPM`,'success');setTimeout(()=>{document.getElementById('finalize-btn').disabled=false;},30000);}catch(err){setLoading(false);toast(`Error: ${err.message}`,'error');showScreen('setup-screen');}}
-function scheduleNextSnapshot(){nextSnapAt=Date.now()+SNAPSHOT_INTERVAL*1000;clearInterval(progressInterval);progressInterval=setInterval(()=>{const rem=Math.max(0,nextSnapAt-Date.now()),el=SNAPSHOT_INTERVAL*1000-rem,pct=(el/(SNAPSHOT_INTERVAL*1000))*100;document.getElementById('snap-progress-bar').style.width=`${pct}%`;document.getElementById('next-snap-time').textContent=`${Math.ceil(rem/1000)}s`;},500);snapshotTimer=setTimeout(async()=>{await submitSnapshot();scheduleNextSnapshot();},SNAPSHOT_INTERVAL*1000);}
-async function manualSnapshot(){clearTimeout(snapshotTimer);clearInterval(progressInterval);await submitSnapshot();scheduleNextSnapshot();}
-async function submitSnapshot(){if(!sessionId)return;const idx=snapshotCount+1;const idleFlag=checkIdleAnomaly(idx),jumpFlag=checkWordCountJump(idx);if(idleFlag)addFlag('warn',idleFlag);if(jumpFlag)addFlag('warn',jumpFlag);const stats=getCurrentStats();try{document.getElementById('status-dot').classList.add('pending');const res=await fetch(`${BACKEND_URL}/api/session/snapshot`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId,snapshotData:stats})});const data=await res.json();if(!data.success)throw new Error(data.error);snapshotCount++;document.getElementById('snap-count').textContent=snapshotCount;addSnapshotToFeed(data.snapshotIndex,data.transactionId,data.hashscanUrl,!!(idleFlag||jumpFlag));document.getElementById('status-dot').classList.remove('pending');toast(`Snapshot #${data.snapshotIndex} anchored to Hedera`,'info');}catch(err){document.getElementById('status-dot').classList.remove('pending');toast(`Snapshot failed: ${err.message}`,'error');}}
-function addSnapshotToFeed(index,txId,url,flagged){const feed=document.getElementById('snapshot-feed');if(feed.querySelector('div[style]'))feed.innerHTML='';const item=document.createElement('div');item.className=`snapshot-item${flagged?' flagged':''}`;const time=new Date().toLocaleTimeString();item.innerHTML=`<div><span class="snap-num">#${index}</span>${flagged?'⚠ Flagged':'Anchored'}<span class="snap-time">${time}</span></div><div class="snap-tx">TX: <a href="${url}" target="_blank">${txId.slice(0,40)}...</a></div>`;feed.insertBefore(item,feed.firstChild);}
-async function finalizeSession(){if(!sessionId)return;if(!confirm('Finalize this session and issue a certificate?\n\nThis will anchor a final summary to the Hedera ledger.'))return;const stats=getCurrentStats();setLoading(true,'Finalizing session on Hedera...');try{const res=await fetch(`${BACKEND_URL}/api/session/finalize`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({sessionId,finalData:{...stats,calibrationProfile:calibProfile,anomalyFlags:anomalies.map(a=>a.message)}})});const data=await res.json();if(!data.success)throw new Error(data.error);clearTimeout(snapshotTimer);clearInterval(progressInterval);clearInterval(sessionTimerInterval);setLoading(false);showCertificateScreen(data);}catch(err){setLoading(false);toast(`Finalize failed: ${err.message}`,'error');}}
-function showCertificateScreen(data){showScreen('cert-screen');const ft=document.getElementById('cert-flags-title'),fl=document.getElementById('cert-flags-list'),seal=document.getElementById('cert-seal');if(anomalies.length===0){ft.textContent='✓ NO ANOMALY FLAGS — SESSION CLEAN';ft.className='cert-flags-title clean';seal.textContent='🔐';}else{ft.textContent=`⚠ ${anomalies.length} ANOMALY FLAG${anomalies.length>1?'S':''} — REVIEW RECOMMENDED`;ft.className='cert-flags-title flagged';seal.textContent='⚠️';anomalies.forEach(a=>{const item=document.createElement('div');item.className='cert-flag-item';item.textContent=`${a.time} — ${a.message}`;fl.appendChild(item);});}const details=[['Document',document.getElementById('display-title').textContent],['Author',document.getElementById('display-author').textContent],['HCS Topic ID',data.topicId],['Total Snapshots',data.totalSnapshots],['WPM Ceiling (calibrated)',`${calibProfile?.ceilingWPM||'—'} WPM`],['Freeflow WPM (calibrated)',`${calibProfile?.freeflowWPM||'—'} WPM`],['Session Avg WPM',`${data.aggregateProfile?.avgWPM||'—'} WPM`],['Anomaly Flags',anomalies.length===0?'None ✓':anomalies.length],['Final Transaction',`<a href="${data.hashscanUrl}" target="_blank">${data.transactionId?.slice(0,36)}...</a>`],['Verify on Hashscan',`<a href="${data.hashscanUrl}" target="_blank">View ledger trail →</a>`]];document.getElementById('cert-details').innerHTML=details.map(([l,v])=>`<div class="cert-detail"><div class="cert-detail-label">${l}</div><div class="cert-detail-value">${v}</div></div>`).join('');document.getElementById('download-cert-btn').onclick=()=>window.open(`${BACKEND_URL}/api/session/${sessionId}/certificate`,'_blank');document.getElementById('status-dot').classList.remove('live','pending');document.getElementById('status-text').textContent='Session finalized';}
-function showScreen(id){document.querySelectorAll('.screen').forEach(s=>{s.classList.remove('active');if(s.id==='writing-screen')s.style.display='none';});const t=document.getElementById(id);t.classList.add('active');if(id==='writing-screen')t.style.display='grid';}
-function wordCount(){const t=document.getElementById('editor')?.value||'';return t.trim()===''?0:t.trim().split(/\s+/).length;}
-function updateSessionTimer(){if(!sessionStartTime)return;const e=Math.floor((Date.now()-sessionStartTime)/1000);document.getElementById('session-timer').textContent=`${String(Math.floor(e/60)).padStart(2,'0')}:${String(e%60).padStart(2,'0')}`;}
-function avg(arr){return arr.length?Math.round(arr.reduce((a,b)=>a+b,0)/arr.length):0;}
-function rhythmScore(flights){if(flights.length<5)return 0;const m=avg(flights);const v=flights.reduce((s,x)=>s+Math.pow(x-m,2),0)/flights.length;const cv=Math.sqrt(v)/(m||1);return Math.max(0,Math.min(1,1-(cv-0.2)/1.2)).toFixed(3);}
-function hashString(str){let h=2166136261n;for(let i=0;i<str.length;i++){h^=BigInt(str.charCodeAt(i));h=(h*16777619n)&0xFFFFFFFFn;}const x=h.toString(16).padStart(8,'0');return`${x}${x}${x}${x}${x}${x}${x}${x}`.slice(0,64);}
-function setLoading(a,t=''){document.getElementById('loading-overlay').classList.toggle('active',a);if(t)document.getElementById('loading-text').textContent=t;}
-function toast(msg,type='info'){const c=document.getElementById('toast-container');const el=document.createElement('div');el.className=`toast ${type}`;el.textContent=msg;c.appendChild(el);setTimeout(()=>el.remove(),4500);}
-setInterval(()=>{if(ks.lastActivity&&(performance.now()-ks.lastActivity)>2000)ks.inBurst=false;},500);
+// ═══════════════════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════════════════
+let BACKEND_URL = "http://localhost:3001";
+let SNAPSHOT_INTERVAL = 300; // seconds
+
+// ═══════════════════════════════════════════════════════
+// SESSION STATE
+// ═══════════════════════════════════════════════════════
+let sessionId = null;
+let topicId = null;
+let sessionStartTime = null;
+let snapshotCount = 0;
+let snapshotTimer = null;
+let sessionTimerInterval = null;
+let nextSnapAt = null;
+let progressInterval = null;
+
+// ═══════════════════════════════════════════════════════
+// KEYSTROKE DYNAMICS ENGINE
+// ═══════════════════════════════════════════════════════
+const ks = {
+  keyDownTimes: {},      // key -> timestamp of keydown
+  dwellTimes: [],        // key hold durations
+  flightTimes: [],       // inter-key gaps
+  lastKeyUp: null,       // timestamp of last keyup
+  totalKeys: 0,
+  backspaces: 0,
+  pauseCount: 0,
+  burstCount: 0,
+  inBurst: false,
+  lastActivity: null,
+  wpmSamples: [],
+  wordCountAtLastSample: 0,
+  lastWpmTime: null,
+  rhythmBuffer: [],      // rolling flight times for waveform
+};
+
+function onKeyDown(e) {
+  const t = performance.now();
+  ks.keyDownTimes[e.code] = t;
+
+  // Detect pause end → burst start
+  if (ks.lastActivity && (t - ks.lastActivity) > 2000) {
+    ks.pauseCount++;
+    ks.inBurst = false;
+  }
+  if (!ks.inBurst) {
+    ks.burstCount++;
+    ks.inBurst = true;
+  }
+  ks.lastActivity = t;
+}
+
+function onKeyUp(e) {
+  const t = performance.now();
+  const down = ks.keyDownTimes[e.code];
+
+  if (down) {
+    const dwell = t - down;
+    if (dwell > 10 && dwell < 800) { // filter anomalies
+      ks.dwellTimes.push(dwell);
+    }
+    delete ks.keyDownTimes[e.code];
+  }
+
+  if (ks.lastKeyUp) {
+    const flight = t - ks.lastKeyUp;
+    if (flight > 10 && flight < 3000) {
+      ks.flightTimes.push(flight);
+      ks.rhythmBuffer.push(flight);
+      if (ks.rhythmBuffer.length > 60) ks.rhythmBuffer.shift();
+    }
+  }
+
+  ks.lastKeyUp = t;
+  ks.totalKeys++;
+  if (e.key === "Backspace") ks.backspaces++;
+
+  // WPM sample every 10 seconds
+  const now = Date.now();
+  if (!ks.lastWpmTime) ks.lastWpmTime = now;
+  if (now - ks.lastWpmTime > 10000) {
+    const wc = wordCount();
+    const deltaWords = wc - ks.wordCountAtLastSample;
+    const deltaMin = (now - ks.lastWpmTime) / 60000;
+    if (deltaMin > 0 && deltaWords >= 0) {
+      ks.wpmSamples.push(Math.round(deltaWords / deltaMin));
+    }
+    ks.wordCountAtLastSample = wc;
+    ks.lastWpmTime = now;
+  }
+
+  updateLiveStats();
+  drawRhythm();
+}
+
+function avg(arr) {
+  if (!arr.length) return 0;
+  return Math.round(arr.reduce((a, b) => a + b, 0) / arr.length);
+}
+
+function rhythmScore(flights) {
+  if (flights.length < 5) return 0;
+  const m = avg(flights);
+  const variance = flights.reduce((s, v) => s + Math.pow(v - m, 2), 0) / flights.length;
+  const cv = Math.sqrt(variance) / (m || 1); // coefficient of variation
+  // Lower CV = more consistent = higher score (human CV typically 0.3–0.8)
+  return Math.max(0, Math.min(1, 1 - (cv - 0.2) / 1.2)).toFixed(3);
+}
+
+function getCurrentStats() {
+  const recent = ks.flightTimes.slice(-100);
+  const recentDwell = ks.dwellTimes.slice(-100);
+  const wc = wordCount();
+  const elapsed = sessionStartTime ? (Date.now() - sessionStartTime) / 60000 : 1;
+  const wpm = Math.round(wc / Math.max(elapsed, 0.1));
+
+  return {
+    avgWPM: wpm,
+    avgDwell: avg(recentDwell),
+    avgFlight: avg(recent),
+    pauseCount: ks.pauseCount,
+    burstCount: ks.burstCount,
+    rhythmScore: parseFloat(rhythmScore(recent)),
+    backspaceRatio: ks.totalKeys > 0 ? (ks.backspaces / ks.totalKeys).toFixed(4) : 0,
+    contentHash: hashString(document.getElementById("editor").value),
+    metadataHash: hashString(JSON.stringify({ wc, chars: document.getElementById("editor").value.length, ts: Date.now() })),
+  };
+}
+
+// Simple non-crypto hash (for demo; replace with Web Crypto SHA-256 in prod)
+function hashString(str) {
+  // Use a simple FNV-1a style hash for the demo
+  let hash = 2166136261n;
+  for (let i = 0; i < str.length; i++) {
+    hash ^= BigInt(str.charCodeAt(i));
+    hash = (hash * 16777619n) & 0xFFFFFFFFn;
+  }
+  // Pad to look like a hash
+  const h = hash.toString(16).padStart(8, "0");
+  return `${h}${h}${h}${h}${h}${h}${h}${h}`.slice(0, 64);
+}
+
+// In production, use:
+// async function sha256(str) {
+//   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+//   return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2,"0")).join("");
+// }
+
+function updateLiveStats() {
+  const stats = getCurrentStats();
+  const setText = (id, val) => {
+    const el = document.getElementById(id);
+    if (el) el.childNodes[0].textContent = val;
+  };
+
+  document.getElementById("stat-wpm").childNodes[0].textContent = stats.avgWPM;
+  document.getElementById("stat-rhythm").childNodes[0].textContent = stats.rhythmScore;
+  document.getElementById("stat-dwell").childNodes[0].textContent = stats.avgDwell || "—";
+  document.getElementById("stat-flight").childNodes[0].textContent = stats.avgFlight || "—";
+  document.getElementById("word-count").textContent = wordCount();
+  document.getElementById("char-count").textContent = document.getElementById("editor").value.length;
+}
+
+// ── Rhythm waveform ────────────────────────────────────
+function drawRhythm() {
+  const canvas = document.getElementById("rhythm-canvas");
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const data = ks.rhythmBuffer;
+  if (data.length < 2) return;
+
+  const maxVal = Math.max(...data, 300);
+  const minVal = Math.min(...data, 50);
+
+  ctx.strokeStyle = "#0f9b8e";
+  ctx.lineWidth = 1.5;
+  ctx.shadowBlur = 6;
+  ctx.shadowColor = "#0f9b8e";
+  ctx.beginPath();
+
+  data.forEach((v, i) => {
+    const x = (i / (data.length - 1)) * W;
+    const y = H - ((v - minVal) / (maxVal - minVal + 1)) * (H - 8) - 4;
+    i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+  });
+
+  ctx.stroke();
+}
+
+// ═══════════════════════════════════════════════════════
+// SESSION MANAGEMENT
+// ═══════════════════════════════════════════════════════
+async function startSession() {
+  const title = document.getElementById("doc-title").value.trim();
+  const author = document.getElementById("author-name").value.trim();
+  BACKEND_URL = document.getElementById("backend-url").value.trim();
+  SNAPSHOT_INTERVAL = parseInt(document.getElementById("snapshot-interval").value);
+
+  if (!title || !author) {
+    toast("Please enter a document title and your name.", "error");
+    return;
+  }
+
+  setLoading(true, "Creating Hedera HCS topic...");
+  document.getElementById("start-btn").disabled = true;
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/session/start`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ documentTitle: title, authorName: author }),
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    sessionId = data.sessionId;
+    topicId = data.topicId;
+    sessionStartTime = Date.now();
+
+    document.getElementById("display-title").textContent = title;
+    document.getElementById("display-author").textContent = author;
+
+    // Switch screens
+    document.getElementById("setup-screen").style.display = "none";
+    document.getElementById("writing-screen").style.display = "contents";
+
+    // Attach keystroke listeners
+    const editor = document.getElementById("editor");
+    editor.addEventListener("keydown", onKeyDown);
+    editor.addEventListener("keyup", onKeyUp);
+    editor.focus();
+
+    // Start session timer
+    sessionTimerInterval = setInterval(updateSessionTimer, 1000);
+
+    // Start auto-snapshot timer
+    scheduleNextSnapshot();
+
+    // Update header
+    document.getElementById("status-dot").classList.add("live");
+    document.getElementById("status-text").textContent = `Session active · Topic ${topicId}`;
+
+    setLoading(false);
+    toast(`Session started! Topic: ${topicId}`, "success");
+
+    // Enable finalize after 30s
+    setTimeout(() => {
+      document.getElementById("finalize-btn").disabled = false;
+    }, 30000);
+
+  } catch (err) {
+    setLoading(false);
+    document.getElementById("start-btn").disabled = false;
+    toast(`Error: ${err.message}`, "error");
+  }
+}
+
+function scheduleNextSnapshot() {
+  nextSnapAt = Date.now() + SNAPSHOT_INTERVAL * 1000;
+
+  clearInterval(progressInterval);
+  progressInterval = setInterval(() => {
+    const remaining = Math.max(0, nextSnapAt - Date.now());
+    const elapsed = SNAPSHOT_INTERVAL * 1000 - remaining;
+    const pct = (elapsed / (SNAPSHOT_INTERVAL * 1000)) * 100;
+    document.getElementById("snap-progress-bar").style.width = `${pct}%`;
+    document.getElementById("next-snap-time").textContent =
+      `${Math.ceil(remaining / 1000)}s`;
+  }, 500);
+
+  snapshotTimer = setTimeout(async () => {
+    await submitSnapshot();
+    scheduleNextSnapshot();
+  }, SNAPSHOT_INTERVAL * 1000);
+}
+
+async function manualSnapshot() {
+  clearTimeout(snapshotTimer);
+  clearInterval(progressInterval);
+  await submitSnapshot();
+  scheduleNextSnapshot();
+}
+
+async function submitSnapshot() {
+  if (!sessionId) return;
+  const stats = getCurrentStats();
+
+  try {
+    document.getElementById("status-dot").classList.add("pending");
+    const res = await fetch(`${BACKEND_URL}/api/session/snapshot`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId, snapshotData: stats }),
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    snapshotCount++;
+    document.getElementById("snap-count").textContent = snapshotCount;
+    addSnapshotToFeed(data.snapshotIndex, data.transactionId, data.hashscanUrl);
+    document.getElementById("status-dot").classList.remove("pending");
+    toast(`Snapshot #${data.snapshotIndex} anchored to Hedera`, "info");
+
+  } catch (err) {
+    document.getElementById("status-dot").classList.remove("pending");
+    toast(`Snapshot failed: ${err.message}`, "error");
+  }
+}
+
+function addSnapshotToFeed(index, txId, url) {
+  const feed = document.getElementById("snapshot-feed");
+  const item = document.createElement("div");
+  item.className = "snapshot-item";
+  const time = new Date().toLocaleTimeString();
+  item.innerHTML = `
+    <div>
+      <span class="snap-num">#${index}</span>
+      Snapshot anchored
+      <span class="snap-time">${time}</span>
+    </div>
+    <div class="snap-tx">
+      TX: <a href="${url}" target="_blank">${txId.slice(0, 40)}...</a>
+    </div>
+  `;
+  // Remove placeholder if present
+  if (feed.children.length === 1 && feed.children[0].tagName !== "DIV".toUpperCase()) {
+    feed.innerHTML = "";
+  }
+  feed.insertBefore(item, feed.firstChild);
+}
+
+async function finalizeSession() {
+  if (!sessionId) return;
+
+  const confirmed = confirm(
+    "Finalize this session and issue a certificate?\n\nThis will anchor a final summary to the Hedera ledger."
+  );
+  if (!confirmed) return;
+
+  setLoading(true, "Finalizing session on Hedera...");
+
+  const stats = getCurrentStats();
+
+  try {
+    const res = await fetch(`${BACKEND_URL}/api/session/finalize`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ sessionId, finalData: stats }),
+    });
+
+    const data = await res.json();
+    if (!data.success) throw new Error(data.error);
+
+    clearTimeout(snapshotTimer);
+    clearInterval(progressInterval);
+    clearInterval(sessionTimerInterval);
+
+    setLoading(false);
+    showCertificateScreen(data);
+
+  } catch (err) {
+    setLoading(false);
+    toast(`Finalize failed: ${err.message}`, "error");
+  }
+}
+
+function showCertificateScreen(data) {
+  document.getElementById("writing-screen").style.display = "none";
+  const screen = document.getElementById("cert-screen");
+  screen.style.display = "flex";
+
+  const details = [
+    ["Document", document.getElementById("display-title").textContent],
+    ["Author", document.getElementById("display-author").textContent],
+    ["HCS Topic ID", data.topicId],
+    ["Total Snapshots", data.totalSnapshots],
+    ["Avg Typing Speed", `${data.aggregateProfile?.avgWPM || "—"} WPM`],
+    ["Rhythm Score", data.aggregateProfile?.avgRhythmScore || "—"],
+    ["Final Transaction", `<a href="${data.hashscanUrl}" target="_blank">${data.transactionId}</a>`],
+    ["Verify on Hashscan", `<a href="${data.hashscanUrl}" target="_blank">View ledger trail →</a>`],
+  ];
+
+  document.getElementById("cert-details").innerHTML = details.map(([label, value]) => `
+    <div class="cert-detail">
+      <div class="cert-detail-label">${label}</div>
+      <div class="cert-detail-value">${value}</div>
+    </div>
+  `).join("");
+
+  document.getElementById("download-cert-btn").onclick = () => {
+    window.open(`${BACKEND_URL}/api/session/${sessionId}/certificate`, "_blank");
+  };
+
+  document.getElementById("status-dot").classList.remove("live", "pending");
+  document.getElementById("status-text").textContent = "Session finalized";
+}
+
+// ═══════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════
+function wordCount() {
+  const text = document.getElementById("editor")?.value || "";
+  return text.trim() === "" ? 0 : text.trim().split(/\s+/).length;
+}
+
+function updateSessionTimer() {
+  if (!sessionStartTime) return;
+  const elapsed = Math.floor((Date.now() - sessionStartTime) / 1000);
+  const m = String(Math.floor(elapsed / 60)).padStart(2, "0");
+  const s = String(elapsed % 60).padStart(2, "0");
+  document.getElementById("session-timer").textContent = `${m}:${s}`;
+}
+
+function setLoading(active, text = "") {
+  const overlay = document.getElementById("loading-overlay");
+  overlay.classList.toggle("active", active);
+  if (text) document.getElementById("loading-text").textContent = text;
+}
+
+function toast(msg, type = "info") {
+  const container = document.getElementById("toast-container");
+  const el = document.createElement("div");
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  container.appendChild(el);
+  setTimeout(() => el.remove(), 4000);
+}
+
+
+// ═══════════════════════════════════════════════════════
+// CALIBRATION ENGINE
+// ═══════════════════════════════════════════════════════
+let calibProfile = null;
+
+// Each task gets its own isolated state object
+function makeTaskState(duration, taskNum) {
+  return {
+    duration,
+    taskNum,
+    elapsed: 0,
+    started: false,
+    finished: false,
+    interval: null,
+    dwellTimes: [],
+    flightTimes: [],
+    keyDownTimes: {},
+    lastKeyUp: null,
+    totalKeys: 0,
+  };
+}
+
+let t1 = null;
+let t2 = null;
+
+function calibAvg(arr) {
+  return arr.length ? Math.round(arr.reduce((a,b)=>a+b,0)/arr.length) : 0;
+}
+
+function calibRhythm(flights) {
+  if (flights.length < 5) return 0;
+  const m = calibAvg(flights);
+  const v = flights.reduce((s,x)=>s+Math.pow(x-m,2),0)/flights.length;
+  const cv = Math.sqrt(v)/(m||1);
+  return Math.max(0,Math.min(1,1-(cv-0.2)/1.2)).toFixed(2);
+}
+
+function calibWpm(inputId, elapsedSec) {
+  const text = document.getElementById(inputId).value.trim();
+  const wc = text === '' ? 0 : text.split(/\s+/).length;
+  const mins = Math.max(elapsedSec, 1) / 60;
+  return Math.round(wc / mins);
+}
+
+function updateRing(ringId, textId, elapsed, total) {
+  const circ = 126;
+  const prog = Math.min(elapsed / total, 1);
+  const remaining = Math.max(0, total - elapsed);
+  document.getElementById(ringId).style.strokeDashoffset = circ * (1 - prog);
+  document.getElementById(textId).textContent = remaining;
+}
+
+// ── TASK 1 ────────────────────────────────────────────
+function t1KeyDown(e) {
+  if (t1.finished) return;
+  t1.keyDownTimes[e.code] = performance.now();
+  if (!t1.started) {
+    t1.started = true;
+    t1.interval = setInterval(tickT1, 1000);
+  }
+}
+
+function t1KeyUp(e) {
+  if (t1.finished) return;
+  const now = performance.now();
+  const down = t1.keyDownTimes[e.code];
+  if (down) {
+    const d = now - down;
+    if (d > 10 && d < 800) t1.dwellTimes.push(d);
+    delete t1.keyDownTimes[e.code];
+  }
+  if (t1.lastKeyUp) {
+    const f = now - t1.lastKeyUp;
+    if (f > 10 && f < 3000) t1.flightTimes.push(f);
+  }
+  t1.lastKeyUp = now;
+  t1.totalKeys++;
+
+  // Update live stats
+  document.getElementById('t1-wpm').textContent = calibWpm('t1-input', t1.elapsed);
+  document.getElementById('t1-rhythm').textContent = calibRhythm(t1.flightTimes);
+
+  // Typing progress bar
+  const passage = document.getElementById('passage-box').textContent.trim();
+  const typed = document.getElementById('t1-input').value.trim();
+  const pct = Math.min(1, typed.length / passage.length);
+  document.getElementById('type-prog').style.width = (pct * 100) + '%';
+
+  // Unlock next at 80% typed
+  if (pct >= 0.8 && !t1.finished) {
+    document.getElementById('t1-next').disabled = false;
+  }
+}
+
+function tickT1() {
+  if (t1.finished) { clearInterval(t1.interval); return; }
+  t1.elapsed++;
+  updateRing('ring1', 'ring1-text', t1.elapsed, t1.duration);
+  if (t1.elapsed >= t1.duration) {
+    clearInterval(t1.interval);
+    finishT1();
+  }
+}
+
+function finishT1() {
+  if (t1.finished) return;
+  t1.finished = true;
+  document.getElementById('t1-input').disabled = true;
+
+  const wpm = calibWpm('t1-input', t1.elapsed);
+  const dwell = calibAvg(t1.dwellTimes);
+  const flight = calibAvg(t1.flightTimes);
+  const rhythm = calibRhythm(t1.flightTimes);
+
+  window._calib1 = { wpm, dwell, flight, rhythm };
+
+  document.getElementById('t1-r-wpm').textContent = wpm;
+  document.getElementById('t1-r-dwell').textContent = dwell;
+  document.getElementById('t1-r-flight').textContent = flight;
+  document.getElementById('t1-r-rhythm').textContent = rhythm;
+  document.getElementById('t1-results').classList.add('show');
+  document.getElementById('t1-next').disabled = false;
+
+  document.getElementById('pip-1').classList.remove('active');
+  document.getElementById('pip-1').classList.add('done');
+  document.getElementById('pip-2').classList.add('active');
+}
+
+// ── TASK 2 ────────────────────────────────────────────
+function t2KeyDown(e) {
+  if (t2.finished) return;
+  t2.keyDownTimes[e.code] = performance.now();
+  if (!t2.started) {
+    t2.started = true;
+    t2.interval = setInterval(tickT2, 1000);
+  }
+}
+
+function t2KeyUp(e) {
+  if (t2.finished) return;
+  const now = performance.now();
+  const down = t2.keyDownTimes[e.code];
+  if (down) {
+    const d = now - down;
+    if (d > 10 && d < 800) t2.dwellTimes.push(d);
+    delete t2.keyDownTimes[e.code];
+  }
+  if (t2.lastKeyUp) {
+    const f = now - t2.lastKeyUp;
+    if (f > 10 && f < 3000) t2.flightTimes.push(f);
+  }
+  t2.lastKeyUp = now;
+  t2.totalKeys++;
+
+  document.getElementById('t2-wpm').textContent = calibWpm('t2-input', t2.elapsed);
+  document.getElementById('t2-rhythm').textContent = calibRhythm(t2.flightTimes);
+}
+
+function tickT2() {
+  if (t2.finished) { clearInterval(t2.interval); return; }
+  t2.elapsed++;
+  updateRing('ring2', 'ring2-text', t2.elapsed, t2.duration);
+  if (t2.elapsed >= t2.duration) {
+    clearInterval(t2.interval);
+    finishT2();
+  }
+}
+
+function finishT2() {
+  if (t2.finished) return;
+  t2.finished = true;
+  document.getElementById('t2-input').disabled = true;
+
+  const wpm = calibWpm('t2-input', t2.elapsed);
+  const dwell = calibAvg(t2.dwellTimes);
+  const flight = calibAvg(t2.flightTimes);
+  const rhythm = calibRhythm(t2.flightTimes);
+
+  window._calib2 = { wpm, dwell, flight, rhythm };
+
+  document.getElementById('t2-r-wpm').textContent = wpm;
+  document.getElementById('t2-r-dwell').textContent = dwell;
+  document.getElementById('t2-r-flight').textContent = flight;
+  document.getElementById('t2-r-rhythm').textContent = rhythm;
+  document.getElementById('t2-results').classList.add('show');
+  document.getElementById('t2-next').disabled = false;
+
+  document.getElementById('pip-2').classList.remove('active');
+  document.getElementById('pip-2').classList.add('done');
+  document.getElementById('pip-3').classList.add('active');
+}
+
+// ── NAVIGATION ────────────────────────────────────────
+function goCalib() {
+  const title = document.getElementById('doc-title').value.trim();
+  const author = document.getElementById('author-name').value.trim();
+  BACKEND_URL = document.getElementById('backend-url').value.trim();
+  SNAPSHOT_INTERVAL = parseInt(document.getElementById('snapshot-interval').value);
+  if (!title || !author) { toast('Please fill in title and name.', 'error'); return; }
+
+  document.getElementById('setup-screen').style.display = 'none';
+  document.getElementById('calib-screen').style.display = 'flex';
+
+  t1 = makeTaskState(60, 1);
+  const input1 = document.getElementById('t1-input');
+  input1.addEventListener('keydown', t1KeyDown);
+  input1.addEventListener('keyup', t1KeyUp);
+  input1.focus();
+}
+
+function goTask2() {
+  // Force finish T1 if not already done (e.g. user clicked early via 80% unlock)
+  if (!t1.finished) finishT1();
+
+  document.getElementById('calib-task-1').style.display = 'none';
+  document.getElementById('calib-task-2').style.display = 'block';
+
+  t2 = makeTaskState(90, 2);
+  const input2 = document.getElementById('t2-input');
+  input2.addEventListener('keydown', t2KeyDown);
+  input2.addEventListener('keyup', t2KeyUp);
+  input2.focus();
+}
+
+function goWriting() {
+  // Force finish T2 if timer ran out but button was clicked
+  if (!t2.finished) finishT2();
+
+  const c1 = window._calib1;
+  const c2 = window._calib2;
+
+  calibProfile = {
+    ceilingWPM:          c1.wpm,
+    transcriptionDwell:  c1.dwell,
+    transcriptionFlight: c1.flight,
+    transcriptionRhythm: c1.rhythm,
+    freeflowWPM:         c2.wpm,
+    freeflowDwell:       c2.dwell,
+    freeflowFlight:      c2.flight,
+    freeflowRhythm:      c2.rhythm,
+  };
+
+  document.getElementById('calib-screen').style.display = 'none';
+  startSession();
+}
+
+// Detect idle (pause > 2s) to end burst
+setInterval(() => {
+  if (ks.lastActivity && (performance.now() - ks.lastActivity) > 2000) {
+    ks.inBurst = false;
+  }
+}, 500);
 </script>
+
 </body>
 </html>
