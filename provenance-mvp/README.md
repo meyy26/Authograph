@@ -1,4 +1,4 @@
-# HumanMark
+# Authograph
 ### Document Provenance via Behavioral Biometrics + Hedera Consensus Service
 
 > *"Not AI detection. Human proof."*
@@ -78,7 +78,7 @@ HCS (Hedera Consensus Service) is **exactly** the primitive we need: a timestamp
 
 ## Use Cases
 
-| Scenario | How HumanMark helps |
+| Scenario | How Authograph helps |
 |---|---|
 | Student submitting an essay | Certificate proves continuous human engagement during writing |
 | Researcher submitting a paper | Timestamped ledger trail of writing session |
