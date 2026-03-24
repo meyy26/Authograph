@@ -1,7 +1,7 @@
 const PDFDocument = require("pdfkit");
 
 /**
- * Generates a HumanMark provenance certificate as a PDF buffer.
+ * Generates an Authograph provenance certificate as a PDF buffer.
  */
 async function generateCertificate(session) {
   return new Promise((resolve, reject) => {
@@ -10,7 +10,7 @@ async function generateCertificate(session) {
       margin: 60,
       info: {
         Title: `HumanMark Certificate — ${session.documentTitle}`,
-        Author: "HumanMark Provenance System",
+        Author: "Authograph Provenance System",
       },
     });
 
@@ -31,7 +31,7 @@ async function generateCertificate(session) {
       .fillColor("#ffffff")
       .fontSize(28)
       .font("Helvetica-Bold")
-      .text("HumanMark", 60, 35);
+      .text("Authograph", 60, 35);
 
     doc
       .fillColor("#aaaacc")
